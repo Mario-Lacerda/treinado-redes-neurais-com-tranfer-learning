@@ -28,7 +28,126 @@ A transferência de aprendizagem pode ser uma boa opção se você tiver as segu
 
 - As duas tarefas são semelhantes.
 
-  
+Projeto completo de treinamento de redes neurais com transferência de aprendizagem
+
+Introdução
+
+A transferência de aprendizagem é uma técnica poderosa em aprendizado de máquina que permite que uma rede neural aprenda com um conjunto de dados e, em seguida, aplique esse conhecimento a um conjunto de dados diferente, mas relacionado. Isso pode economizar muito tempo e esforço, pois você não precisa treinar uma rede neural do zero.
+
+Neste projeto, você aprenderá a:
+
+Carregar e pré-processar dados de imagem
+Criar uma rede neural convolucional (CNN)
+Treinar a CNN usando transferência de aprendizagem
+Avaliar o desempenho da CNN
+Pré-requisitos
+
+Conhecimento básico de Python
+Conhecimento básico de aprendizado de máquina
+Uma GPU (opcional, mas recomendada)
+Materiais
+
+Conjunto de dados CIFAR-10
+Biblioteca Keras
+Biblioteca TensorFlow
+Passos
+
+1. Carregar e pré-processar dados de imagem
+
+import tensorflow as tf
+
+# Carregar o conjunto de dados CIFAR-10
+(x_train, y_train), (x_test, y_test) = tf.keras.datasets.cifar10.load_data()
+
+# Normalizar os dados de imagem
+x_train = x_train.astype('float32') / 255.0
+x_test = x_test.astype('float32') / 255.0
+2. Criar uma rede neural convolucional (CNN)
+
+from tensorflow.keras import layers, models
+
+# Criar a CNN
+model = models.Sequential([
+  layers.Conv2D(32, (3, 3), activation='relu', input_shape=(32, 32, 3)),
+  layers.MaxPooling2D((2, 2)),
+  layers.Conv2D(64, (3, 3), activation='relu'),
+  layers.MaxPooling2D((2, 2)),
+  layers.Conv2D(128, (3, 3), activation='relu'),
+  layers.MaxPooling2D((2, 2)),
+  layers.Flatten(),
+  layers.Dense(64, activation='relu'),
+  layers.Dense(10, activation='softmax')
+])
+3. Treinar a CNN usando transferência de aprendizagem
+
+# Carregar os pesos de uma CNN pré-treinada
+model.load_weights('vgg16_weights.h5')
+
+# Congelar as camadas da CNN pré-treinada
+for layer in model.layers[:15]:
+  layer.trainable = False
+
+# Compilar a CNN
+model.compile(optimizer='adam',
+              loss='sparse_categorical_crossentropy',
+              metrics=['accuracy'])
+
+# Treinar a CNN
+model.fit(x_train, y_train, epochs=5)
+
+import tensorflow as tf
+from tensorflow.keras import layers, models
+
+# Carregar o conjunto de dados CIFAR-10
+(x_train, y_train), (x_test, y_test) = tf.keras.datasets.cifar10.load_data()
+
+# Normalizar os dados de imagem
+x_train = x_train.astype('float32') / 255.0
+x_test = x_test.astype('float32') / 255.0
+
+# Criar a CNN baseada na arquitetura VGG16
+base_model = tf.keras.applications.VGG16(weights='imagenet', include_top=False, input_shape=(32, 32, 3))
+
+# Congelar as camadas da CNN base
+for layer in base_model.layers:
+  layer.trainable = False
+
+# Adicionar novas camadas à CNN
+x = base_model.output
+x = layers.Flatten()(x)
+x = layers.Dense(256, activation='relu')(x)
+predictions = layers.Dense(10, activation='softmax')(x)
+
+# Criar o modelo completo
+model = models.Model(inputs=base_model.input, outputs=predictions)
+
+# Compilar o modelo
+model.compile(optimizer='adam',
+              loss='sparse_categorical_crossentropy',
+              metrics=['accuracy'])
+
+# Treinar o modelo
+model.fit(x_train, y_train, epochs=5)
+
+# Avaliar o modelo
+loss, accuracy = model.evaluate(x_test, y_test)
+
+print(f'Loss: {loss}')
+print(f'Accuracy: {accuracy}')
+
+
+Este código cria uma CNN baseada na arquitetura VGG16 e congela as camadas da CNN base. Em seguida, adiciona novas camadas à CNN e compila o modelo. Por fim, treina e avalia o modelo.
+
+
+
+4. Avaliar o desempenho da CNN
+
+# Avaliar a CNN
+loss, accuracy = model.evaluate(x_test, y_test)
+
+print(f'Loss: {loss}')
+print(f'Accuracy: {accuracy}')
+
 
 #### **Como implementar a transferência de aprendizagem?**
 
